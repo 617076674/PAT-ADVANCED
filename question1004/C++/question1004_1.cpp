@@ -4,36 +4,36 @@
 
 using namespace std;
 
-struct node {
+struct node {	//存放节点值及其孩子信息 
 	int num;
 	vector<int> child;
 };
 
-int N;	//节点总数
-int M;	//非叶子节点数
+int N, M;	//节点总数，非叶子节点数 
 node Node[100];
 vector<int> leaves;	//存放每一层的叶子节点数 
 
 void levelTraversal(int root); 
 
 int main(){
-	cin >> N >> M;
+	scanf("%d %d", &N, &M);
 	int ID, K, childID;
 	for(int i = 0; i < M; i++){
-		cin >> ID >> K;
+		scanf("%d %d", &ID, &K);
 		for(int j = 0; j < K; j++){
-			cin >> childID;
+			scanf("%d", &childID);
 			Node[ID].child.push_back(childID);
 		}
 	}
 	levelTraversal(1);
 	for(int i = 0; i < leaves.size(); i++){
-		cout << leaves[i];
+		printf("%d", leaves[i]);
 		if(i != leaves.size() - 1){
-			cout << " ";
+			printf(" ");
+		}else{
+			printf("\n");
 		}
 	}
-	cout << endl;
 	return 0; 
 }
 

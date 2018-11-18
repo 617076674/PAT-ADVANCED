@@ -5,36 +5,27 @@
 
 using namespace std;
 
-int N;
-int M;
-int INF = 1000000000;
-int lenGraph[510][510];
-int timeGraph[510][510];
-int source;
-int destination;
-int dLen[510];
-set<int> preLen[510];
-vector<int> tempPathLen;
-vector<int> pathLen;
-int minTime = INF;
-bool inqLen[510] = {false};
-int countInqLen[510] = {0};
-int dTime[510];
-set<int> preTime[510];
-vector<int> tempPathTime;
-vector<int> pathTime;
-int minCross = INF;
-bool inqTime[510] = {false};
-int countInqTime[510] = {0};
+int N, M, source, destination, INF = 1000000000;	//十字路口数量，道路数量，起点，终点，无穷大数
+int lenGraph[510][510], timeGraph[510][510];
+int dLen[510], dTime[510];
+set<int> preLen[510], preTime[510];
+vector<int> tempPathLen, tempPathTime;
+vector<int> pathLen, pathTime;
+int minTime = INF, minCross = INF;
+bool inqLen[510], inqTime[510];
+int countInqLen[510], countInqTime[510];
 
 bool spfaLen(int s);
 void dfsLen(int nowVisit);
-
 bool spfaTime(int s);
 void dfsTime(int nowVisit);
 
 int main() {
-	cin >> N >> M;
+	fill(inqLen, inqLen + 510, false);
+	fill(inqTime, inqTime + 510, false);
+	fill(countInqLen, countInqLen + 510, false);
+	fill(countInqTime, countInqTime + 510, false);
+	scanf("%d %d", &N, &M);	//读取十字路口数量和路径数量
 	for(int i = 0; i < N; i++) {
 		for(int j = 0; j < N; j++) {
 			lenGraph[i][j] = timeGraph[i][j] = INF;
@@ -42,7 +33,7 @@ int main() {
 	}
 	int V1, V2, one_way, length, time;
 	for(int i = 0; i < M; i++) {
-		cin >> V1 >> V2 >> one_way >> length >> time;
+		scanf("%d %d %d %d %d", &V1, &V2, &one_way, &length, &time);	//读取每条道路的信息
 		lenGraph[V1][V2] = length;
 		timeGraph[V1][V2] = time;
 		if(one_way != 1) {
@@ -50,7 +41,7 @@ int main() {
 			timeGraph[V2][V1] = time;
 		}
 	}
-	cin >> source >> destination;
+	scanf("%d %d", &source, &destination);
 	spfaLen(source);
 	dfsLen(destination);
 	spfaTime(source);
@@ -61,28 +52,31 @@ int main() {
 			printf(" %d", pathLen[i]);
 			if(i != 0) {
 				printf(" ->");
+			}else{
+				printf("\n");
 			}
 		}
-		printf("\n");
 	} else {
 		printf("Distance = %d:", dLen[destination]);
 		for(int i = pathLen.size() - 1; i >= 0; i--) {
 			printf(" %d", pathLen[i]);
 			if(i != 0) {
 				printf(" ->");
+			}else{
+				printf("\n");
 			}
 		}
-		printf("\n");
 		printf("Time = %d:", dTime[destination]);
 		for(int i = pathTime.size() - 1; i >= 0; i--) {
 			printf(" %d", pathTime[i]);
 			if(i != 0) {
 				printf(" ->");
+			}else{
+				printf("\n");
 			}
 		}
-		printf("\n");
 	}
-
+	return 0;
 }
 
 bool spfaLen(int s) {
@@ -108,7 +102,7 @@ bool spfaLen(int s) {
 						q.push(v);
 						inqLen[v] = true;
 						countInqLen[v]++;
-						if(countInqLen[v] >= N){
+						if(countInqLen[v] > N - 1){
 							return false;
 						}
 					}
@@ -118,7 +112,7 @@ bool spfaLen(int s) {
 						q.push(v);
 						inqLen[v] = true;
 						countInqLen[v]++;
-						if(countInqLen[v] >= N){
+						if(countInqLen[v] > N - 1){
 							return false;
 						}
 					}
@@ -141,10 +135,9 @@ void dfsLen(int nowVisit) {
 			minTime = time;
 		}
 		tempPathLen.pop_back();
-		return;
+		return;	//递归终止条件 
 	}
-	set<int>::iterator it;
-	for(it = preLen[nowVisit].begin(); it != preLen[nowVisit].end(); it++) {
+	for(set<int>::iterator it = preLen[nowVisit].begin(); it != preLen[nowVisit].end(); it++) {
 		dfsLen(*it);
 	}
 	tempPathLen.pop_back();
@@ -173,7 +166,7 @@ bool spfaTime(int s) {
 						q.push(v);
 						inqTime[v] = true;
 						countInqTime[v]++;
-						if(countInqTime[v] >= N){
+						if(countInqTime[v] > N - 1){
 							return false;
 						}
 					}
@@ -183,7 +176,7 @@ bool spfaTime(int s) {
 						q.push(v);
 						inqTime[v] = true;
 						countInqTime[v]++;
-						if(countInqTime[v] >= N){
+						if(countInqTime[v] > N - 1){
 							return false;
 						}
 					}
@@ -202,10 +195,9 @@ void dfsTime(int nowVisit) {
 			minCross = tempPathTime.size();
 		}
 		tempPathTime.pop_back();
-		return;
+		return;	//递归终止条件 
 	}
-	set<int>::iterator it;
-	for(it = preTime[nowVisit].begin(); it != preTime[nowVisit].end(); it++) {
+	for(set<int>::iterator it = preTime[nowVisit].begin(); it != preTime[nowVisit].end(); it++) {
 		dfsTime(*it);
 	}
 	tempPathTime.pop_back();

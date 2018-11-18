@@ -76,7 +76,7 @@ bool spfa(int s) {
 						q.push(v);
 						inq[v] = true;
 						countInq[v]++;
-						if(countInq[v] >= N + 1){
+						if(countInq[v] > N){
 							return false;
 						}
 					}	
@@ -86,7 +86,7 @@ bool spfa(int s) {
 						q.push(v);
 						inq[v] = true;
 						countInq[v]++;
-						if(countInq[v] >= N + 1){
+						if(countInq[v] > N){
 							return false;
 						}
 					}

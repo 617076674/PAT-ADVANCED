@@ -13,7 +13,7 @@ bool cmp(station s1, station s2);
 int main() {
 	double Cmax, D, Davg;
 	int N;
-	cin >> Cmax >> D >> Davg >>  N;
+	cin >> Cmax >> D >> Davg >> N;
 	station stations[N + 1];
 	for(int i = 1; i < N + 1; i++) {
 		scanf("%lf %lf", &stations[i].price, &stations[i].distance);
@@ -63,7 +63,7 @@ int main() {
 			}
 			break;
 		}
-		for(; stations[i].distance - stations[now].distance <= maxLen && i < N + 1; i++) {
+		for(; stations[i].distance - stations[now].distance <= maxLen && i < N + 1; i++) {	//循环a 
 			//在now能到达的下一个加油站里寻找价格最低的那个加油站编号
 			if(stations[i].price < stations[min].price) {
 				min = i;
@@ -75,7 +75,7 @@ int main() {
 			}
 		}
 		//如果在能到达的下一个加油站里无法找到价格比当前加油站更低或相同的加油站，那么我们的下一个加油站就选取能到达的加油站里价格最低的加油站
-		if(i == N + 1 || stations[i].distance - stations[now].distance > maxLen) {
+		if(i == N + 1 || stations[i].distance - stations[now].distance > maxLen) {	//取的循环a中循环终止的相反条件 
 			//如果在now站加满油就能够到达目的地了
 			if(stations[now].distance + maxLen >= D) {
 				if(nowOil < (D - stations[now].distance) / Davg) {

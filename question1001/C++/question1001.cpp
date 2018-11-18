@@ -2,9 +2,9 @@
 #include<cstring>
 
 int main() {
-	int a, b;
+	int a, b;	//读取输入数据a和b 
 	scanf("%d %d", &a, &b);
-	int sum = a + b;
+	int sum = a + b;	//计算和 
 	if(sum == 0) {	//对和为0的情况做特殊处理 
 		printf("0\n");
 		return 0;
@@ -12,7 +12,7 @@ int main() {
 	bool flag = true;	//flag用以标记和是否是负数 
 	if(sum < 0) {
 		flag = false;
-		sum *= -1;
+		sum *= -1;	//将负数转变为正数 
 	}
 	char result[15];
 	int index = 0;	//记录char数组result的下标 

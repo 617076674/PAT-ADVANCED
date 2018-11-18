@@ -7,22 +7,22 @@ using namespace std;
 int n;	//城市数量
 int m;	//高速公路数量
 int k;	//需要检查的城市数量
-int graph[1001][1001] = {0};	//无向图
+vector<int> graph[1001];	//无向图
 bool inq[1001];
 
 void bfs(int nowVisit, int city);
 
 int main() {
-	cin >> n >> m >> k;
+	scanf("%d %d %d", &n, &m, &k);
 	int city1, city2;
 	for(int i = 0; i < m; i++) {
-		cin >> city1 >> city2;
-		graph[city1 - 1][city2 - 1] = 1;
-		graph[city2 - 1][city1 - 1] = 1;
+		scanf("%d %d", &city1, &city2);
+		graph[city1 - 1].push_back(city2 - 1);
+		graph[city2 - 1].push_back(city1 - 1);
 	}
 	int city;
 	for(int i = 0; i < k; i++) {
-		cin >> city;
+		scanf("%d", &city);
 		int count = 0;
 		fill(inq, inq + 1001, false);
 		for(int j = 0; j < n; j++) {
@@ -34,7 +34,7 @@ int main() {
 				count++;
 			}
 		}
-		cout << count - 1 << endl;
+		printf("%d\n", count - 1);
 	}
 }
 
@@ -45,9 +45,9 @@ void bfs(int nowVisit, int city) {
 		int now = q.front();
 		inq[now] = true;
 		q.pop();
-		for(int i = 0; i < n; i++) {
-			if(i != city - 1 && !inq[i] && graph[i][now] != 0) {
-				q.push(i);
+		for(int i = 0; i < graph[now].size(); i++){
+			if(graph[now][i] != city - 1 && !inq[graph[now][i]]) {
+				q.push(graph[now][i]);
 			}
 		}
 	}

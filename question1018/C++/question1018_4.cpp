@@ -55,7 +55,7 @@ void dijkstra(int s) {
 		d[i] = INF;
 	}
 	d[s] = 0;
-	for(int i = 0; i < N + 1; i++) {
+	for(int i = 0; i <= N; i++) {
 		int u = -1, min = INF;
 		for(int j = 0; j <= N; j++) {
 			if(!visited[j] && d[j] < min) {

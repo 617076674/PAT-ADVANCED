@@ -9,32 +9,33 @@ struct node {
 	vector<int> child;
 };
 
-int N;	//节点总数
-int M;	//非叶子节点数
+int N, M;	//节点总数，非叶子节点数
 node Node[100];
-int leaves[100] = {0};//存放每一层的叶子节点数
+int leaves[100];//存放每一层的叶子节点数
 int depth; 
 
 void dfs(int root, int level); 
 
 int main(){
-	cin >> N >> M;
+	fill(leaves, leaves + 100, 0);
+	scanf("%d %d", &N, &M);
 	int ID, K, childID;
 	for(int i = 0; i < M; i++){
-		cin >> ID >> K;
+		scanf("%d %d", &ID, &K);
 		for(int j = 0; j < K; j++){
-			cin >> childID;
+			scanf("%d", &childID);
 			Node[ID].child.push_back(childID);
 		}
 	}
 	dfs(1, 0);
 	for(int i = 0; i <= depth; i++){
-		cout << leaves[i];
+		printf("%d", leaves[i]);
 		if(i != depth){
-			cout << " ";
+			printf(" "); 
+		}else{
+			printf("\n");
 		}
 	}
-	cout << endl;
 	return 0; 
 }
 
