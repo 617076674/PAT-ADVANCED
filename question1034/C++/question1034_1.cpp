@@ -1,102 +1,104 @@
 #include<iostream>
-#include<string>
+#include<vector>
 #include<map>
+#include<string>
+#include<algorithm>
 
 using namespace std;
 
-map<int, string> intToString;	//编号->姓名 
-map<string, int> stringToInt;	//姓名->编号 
-map<string, int> gang;		//Gang的头目姓名->Gang的人数 
-
-int graph[2001][2001] = {0};	//邻接矩阵graph 
-int weight[2001] = {0};		//点权weight，判断Gang中的头目是谁，需要用到点权 
-bool visited[2001] = {false};	//标记是否被访问 
-
-int n;	//边数n 
-int k;	//判断一个团队是否是Gang的标准k 
-int numPerson = 0;	//总人数numPerson 
-
-/*
-	dfs函数访问单个连通块
-	
-	nowVisit：当前访问的编号
-	head：头目
-	numMember：成员编号
-	totalValue：连通块的总边权，判断一个团队是否是Gang，需要用到连通块的总边权 
-*/ 
-void dfs(int nowVisit, int& head, int& numMember, int& totalValue);
-
-/*
-	dfsTravel函数遍历整个图，获取每个连通块的信息 
-*/
-void dfsTravel(); 
-
-/*
-	change函数返回姓名str对应的编号 
-*/
-int change(string str);
-
-
-int main() {
-	cin >> n >> k;
-	string name1;
-	string name2;
+struct node{
+	int v;
 	int time;
-	for(int i = 0; i < n; i++) {
-		cin >> name1 >> name2 >> time;	//输入边的两个端点和点权 
-		int id1 = change(name1);
-		int id2 = change(name2);
-		weight[id1] += time;
-		weight[id2] += time;
-		graph[id1][id2] += time;
-		graph[id2][id1] += time;	
+	node(int _v, int _time){
+		v = _v;
+		time = _time;
 	}
-	dfsTravel();	//遍历整个图的所有连通块，获取Gang的信息
-	cout << gang.size() << endl;
-	map<string, int>::iterator it;
-	for(it = gang.begin(); it != gang.end(); it++){
-		cout << it->first << " " << it->second << endl; 
-	} 
-	
+};
+
+struct gang{
+	string head;
+	int size;
+	gang(string _head, int _size){
+		head = _head;
+		size = _size;
+	}
+};
+
+int N, K;
+map<string, int> stringToInt;
+map<int, string> intToString;
+int total = 0;
+vector<node> graph[2000];
+bool visited[2000];
+int head, headTime, gangSize, pointWeight;
+
+int changeToInt(string str);
+void dfs(int nowVisit);
+bool cmp(gang g1, gang g2);
+
+int main(){
+	fill(visited, visited + 2000, false);
+	scanf("%d %d", &N, &K);
+	string name1, name2;
+	int person1, person2, time;
+	for(int i = 0; i < N; i++){
+		cin >> name1 >> name2 >> time;
+		person1 = changeToInt(name1);
+		person2 = changeToInt(name2);
+		graph[person1].push_back(node(person2, time));
+		graph[person2].push_back(node(person1, time));
+	}
+	vector<gang> gangs;
+	for(int i = 0; i <= total; i++){
+		if(visited[i]){
+			continue;
+		}
+		head = i;
+		headTime = 0;
+		gangSize = 0;
+		pointWeight = 0;
+		dfs(i);
+		if(gangSize > 2 && pointWeight > K * 2){
+			gangs.push_back(gang(intToString[head], gangSize));
+		}
+	}
+	sort(gangs.begin(), gangs.end(), cmp);
+	cout << gangs.size() << endl;
+	for(int i = 0; i < gangs.size(); i++){
+		cout << gangs[i].head << " " << gangs[i].size << endl;
+	}
 	return 0;
-}
+} 
 
-void dfs(int nowVisit, int& head, int& numMember, int& totalValue){
-	numMember++;
-	visited[nowVisit] = true;
-	if(weight[nowVisit] > weight[head]){
-		head = nowVisit;	//当前访问节点的点权大于头目的点权，则更新头目 
-	}
-	for(int i = 0; i < numPerson; i++){
-		if(graph[nowVisit][i] > 0){
-			totalValue += graph[nowVisit][i];
-			graph[nowVisit][i] = graph[i][nowVisit] = 0;	//删除这条边，防止回头
-			if(!visited[i]){
-				dfs(i, head, numMember, totalValue);	//如果i未被访问，则递归访问i 
-			} 
-		}
-	}
-}
-
-void dfsTravel(){
-	for(int i = 0; i < numPerson; i++){
-		if(!visited[i]){
-			int head = i;	//头目 
-			int numMember = 0;	//成员数 
-			int totalValue = 0;	//总边权
-			dfs(i, head, numMember, totalValue);
-			if(numMember > 2 && totalValue > k){
-				gang[intToString[head]] = numMember;
-			} 
-		}
-	}
-}
-
-int change(string str){
+int changeToInt(string str){
 	if(stringToInt.find(str) != stringToInt.end()){
 		return stringToInt[str];
 	}
-	stringToInt[str] = numPerson;
-	intToString[numPerson] = str;
-	return numPerson++;
+	stringToInt[str] = total;
+	intToString[total] = str;
+	return total++;
+}
+
+void dfs(int nowVisit){
+	visited[nowVisit] = true;
+	gangSize++;
+	int callTime = 0;
+	for(int i = 0; i < graph[nowVisit].size(); i++){
+		callTime += graph[nowVisit][i].time;
+	}
+	pointWeight += callTime;
+	if(callTime > headTime){
+		head = nowVisit;
+		headTime = callTime;
+	}
+	for(int i = 0; i < graph[nowVisit].size(); i++){
+		int v = graph[nowVisit][i].v;
+		if(!visited[v]){
+			dfs(v);
+		}
+	}
+}
+
+bool cmp(gang g1, gang g2){
+	return g1.head < g2.head;
 }

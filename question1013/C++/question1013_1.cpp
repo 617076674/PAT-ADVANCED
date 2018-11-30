@@ -3,47 +3,45 @@
 
 using namespace std;
 
-int n;	//城市数量
-int m;	//高速公路数量
-int k;	//需要检查的城市数量
-int graph[1001][1001] = {0};	//无向图
-bool visited[1001]; 
+int N, M, K;
+vector<int> graph[1001];
+int lost_city, count;
+bool visited[1001];
 
-void dfs(int nowVisit, int city);
+void dfs(int nowVisit);
 
 int main(){
-	cin >> n >> m >> k;
+	scanf("%d %d %d", &N, &M, &K);
 	int city1, city2;
-	for(int i = 0; i < m; i++){
-		cin >> city1 >> city2;
-		graph[city1 - 1][city2 - 1] = 1;
-		graph[city2 - 1][city1 - 1] = 1;
+	for(int i = 0; i < M; i++){
+		scanf("%d %d", &city1, &city2);
+		graph[city1].push_back(city2);
+		graph[city2].push_back(city1);
 	}
-	int city;
-	for(int i = 0; i < k; i++){
-		cin >> city;
-		int count = 0;
-		for(int j = 0; j < n; j++){
-			visited[j] = false;
-		}
-		for(int j = 0; j < n; j++){
-			if(j == city - 1){
+	for(int i = 0; i < K; i++){
+		fill(visited + 1, visited + N + 1, false);
+		count = 0;
+		scanf("%d", &lost_city);
+		for(int j = 1; j <= N; j++){
+			if(j == lost_city){
 				continue;
 			}
 			if(!visited[j]){
-				dfs(j, city);
+				dfs(j);
 				count++;
 			}
 		}
-		cout << count - 1 << endl;
-	} 
-}
+		printf("%d\n", count - 1);
+	}
+	return 0;
+} 
 
-void dfs(int nowVisit, int city){
+void dfs(int nowVisit){
 	visited[nowVisit] = true;
-	for(int i = 0; i < n; i++){
-		if(i != city - 1 && !visited[i] && graph[i][nowVisit] != 0){
-			dfs(i, city);
+	for(int i = 0; i < graph[nowVisit].size(); i++){
+		int v = graph[nowVisit][i];
+		if(!visited[v] && v != lost_city){
+			dfs(v);
 		}
 	}
 }

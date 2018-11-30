@@ -4,25 +4,22 @@
 
 using namespace std;
 
-struct node {
-	int v;	//节点编号
-	int level;	//层数
-	node(int _v, int _level) : v(_v), level(_level) {};	//构造函数
-};
-
 int n;	//节点个数
-vector<int> graph[10001];	//无向图
-bool visited[10001] = {false};	//标记数组
-int level[10001] = {0};	//记录广度优先遍历的层数
+vector<int> graph[10000];	//无向图
+bool visited[10000];	//标记数组
+int level[10000];	//记录广度优先遍历的层数
+int index;
 
 void dfs(int nowVisit);
-void bfs(int nowVisit, int index);
+void bfs(int nowVisit);
 
 int main() {
-	cin >> n;
+	scanf("%d", &n);
+	fill(level, level + n, 0);
+	fill(visited, visited + n, false);
 	int v1, v2;
 	for(int i = 0; i < n - 1; i++) {
-		cin >> v1 >> v2;
+		scanf("%d %d", &v1, &v2);
 		graph[v1 - 1].push_back(v2 - 1);
 		graph[v2 - 1].push_back(v1 - 1);
 	}
@@ -37,15 +34,11 @@ int main() {
 		printf("Error: %d components\n", count);
 		return 0;
 	}
-	for(int i = 0; i < 10001; i++) {
-		visited[i] = false;
-	}
 	for(int i = 0; i < n; i++) {
-		for(int j = 0; j < 10001; j++) {
-			visited[j] = false;
-		}
+		fill(visited, visited + n, false);
 		if(!visited[i]) {
-			bfs(i, i);
+			index = i;
+			bfs(i);
 		}
 	}
 	int max = level[0];
@@ -56,7 +49,7 @@ int main() {
 	}
 	for(int i = 0; i < n; i++) {
 		if(level[i] == max) {
-			cout << i + 1 << endl;
+			printf("%d\n", i + 1);
 		}
 	}
 	return 0;
@@ -71,23 +64,23 @@ void dfs(int nowVisit) {
 	}
 }
 
-void bfs(int nowVisit, int index) {
-	queue<node> q;
-	q.push(node(nowVisit, 0));
+void bfs(int nowVisit) {
+	queue<int> q;
+	q.push(nowVisit);
 	visited[nowVisit] = true;
 	while(!q.empty()) {
-		node uNode = q.front();
-		if(uNode.level > level[index]) {
-			level[index] = uNode.level;
-		}
-		int u = uNode.v;
-		q.pop();
-		for(int i = 0; i < graph[u].size(); i++) {
-			int v = graph[u][i];
-			if(!visited[v]) {
-				q.push(node(v, uNode.level + 1));
-				visited[v] = true;
+		int qSize = q.size();
+		for(int i = 0; i < qSize; i++) {
+			int u = q.front();
+			q.pop();
+			for(int j = 0; j < graph[u].size(); j++){
+				int v = graph[u][j];
+				if(!visited[v]){
+					q.push(v);
+					visited[v] = true;
+				}
 			}
 		}
+		level[index]++;
 	}
 }

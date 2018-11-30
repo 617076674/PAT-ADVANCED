@@ -4,50 +4,50 @@
 
 using namespace std;
 
-int n;	//城市数量
-int m;	//高速公路数量
-int k;	//需要检查的城市数量
+int N, M, K;
 vector<int> graph[1001];	//无向图
 bool inq[1001];
+int lost_city, count;
 
-void bfs(int nowVisit, int city);
+void bfs(int nowVisit);
 
 int main() {
-	scanf("%d %d %d", &n, &m, &k);
+	scanf("%d %d %d", &N, &M, &K);
 	int city1, city2;
-	for(int i = 0; i < m; i++) {
+	for(int i = 0; i < M; i++) {
 		scanf("%d %d", &city1, &city2);
-		graph[city1 - 1].push_back(city2 - 1);
-		graph[city2 - 1].push_back(city1 - 1);
+		graph[city1].push_back(city2);
+		graph[city2].push_back(city1);
 	}
-	int city;
-	for(int i = 0; i < k; i++) {
-		scanf("%d", &city);
-		int count = 0;
-		fill(inq, inq + 1001, false);
-		for(int j = 0; j < n; j++) {
-			if(j == city - 1) {
+	for(int i = 0; i < K; i++) {
+		scanf("%d", &lost_city);
+		count = 0;
+		fill(inq + 1, inq + N + 1, false);
+		for(int j = 1; j < N + 1; j++) {
+			if(j == lost_city) {
 				continue;
 			}
 			if(!inq[j]) {
-				bfs(j, city);
+				bfs(j);
 				count++;
 			}
 		}
 		printf("%d\n", count - 1);
 	}
+	return 0;
 }
 
-void bfs(int nowVisit, int city) {
+void bfs(int nowVisit) {
 	queue<int> q;
 	q.push(nowVisit);
+	inq[nowVisit] = true;
 	while(!q.empty()) {
 		int now = q.front();
-		inq[now] = true;
 		q.pop();
-		for(int i = 0; i < graph[now].size(); i++){
-			if(graph[now][i] != city - 1 && !inq[graph[now][i]]) {
+		for(int i = 0; i < graph[now].size(); i++) {
+			if(graph[now][i] != lost_city && !inq[graph[now][i]]) {
 				q.push(graph[now][i]);
+				inq[graph[now][i]] = true;
 			}
 		}
 	}

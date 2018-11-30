@@ -1,63 +1,63 @@
 #include<iostream>
 #include<vector>
+#include<set>
 
 using namespace std;
 
-int n;	//城市数量
-int m;	//高速公路数量
-int k;	//需要检查的城市数量
-vector<int> graph[1001];	//无向图
-int father[1001];	//并查集数组
-bool visited[1001]; //标记数组 
+struct edge{
+	int u, v;
+	edge(int _u, int _v){
+		u = _u;
+		v = _v;
+	}
+};
+
+int N, M, K;
+vector<edge> edges;
+int lost_city, count;
+int father[1001];
+set<int> fathers;
 
 int findFather(int x);
-bool isConnected(int x, int y); 
-void unionTwo(int x, int y);
-void init();
+void unionTwo(int a, int b);
 
 int main(){
-	cin >> n >> m >> k;
+	scanf("%d %d %d", &N, &M, &K);
 	int city1, city2;
-	for(int i = 0; i < m; i++){
-		cin >> city1 >> city2;
-		graph[city1 - 1].push_back(city2 - 1);
-		graph[city2 - 1].push_back(city1 - 1);
+	for(int i = 0; i < M; i++){
+		scanf("%d %d", &city1, &city2);
+		edges.push_back(edge(city1, city2));
 	}
-	int city;
-	for(int i = 0; i < k; i++){
-		cin >> city;
-		init();
-		for(int j = 0; j < n; j++){
-			for(int l = 0; l < graph[j].size(); l++){
-				int u = j, v = graph[j][l];
-				if(u == city - 1 || v == city - 1){
-					continue;
-				}
-				unionTwo(u, v);
-			}
+	for(int i = 0; i < K; i++){
+		for(int j = 1; j < N + 1; j++){
+			father[j] = j;
 		}
-		int count = 0;
-		for(int j = 0; j < n; j++){
-			if(j == city - 1){
+		count = 0;
+		fathers.clear();
+		scanf("%d", &lost_city);
+		for(int j = 0; j < edges.size(); j++){
+			if(edges[j].u == lost_city || edges[j].v == lost_city){
 				continue;
 			}
-			int jFather = findFather(j);
-			if(!visited[jFather]){
-				count++;
-				visited[jFather] = true;
-			}
+			unionTwo(edges[j].u, edges[j].v);
 		}
-		cout << count - 1 << endl;
-	} 
-	return 0; 
-}
+		for(int j = 1; j < N + 1; j++){
+			if(j == lost_city){
+				continue;
+			}
+			fathers.insert(findFather(j));
+		}
+		printf("%d\n", fathers.size() - 1);
+	}
+	return 0;
+} 
 
 int findFather(int x){
 	int a = x;
 	while(x != father[x]){
-		x = father[x];	
+		x = father[x];
 	}
-	while(a != father[a]){	//路径压缩 
+	while(a != father[a]){
 		int z = a;
 		a = father[a];
 		father[z] = x;
@@ -65,24 +65,10 @@ int findFather(int x){
 	return x;
 }
 
-bool isConnected(int x, int y){
-	int xFather = findFather(x);
-	int yFather = findFather(y);
-	if(xFather != yFather){
-		return false;
-	}
-	return true;
-}
-
-void unionTwo(int x, int y){
-	if(!isConnected(x, y)){
-		father[father[x]] = father[y];
-	}
-} 
-
-void init(){
-	for(int i = 0; i < n; i++){
-		father[i] = i;
-		visited[i] = false; 
+void unionTwo(int a, int b){
+	int a_father = findFather(a);
+	int b_father = findFather(b);
+	if(a_father != b_father){
+		father[a_father] = b_father;
 	}
 }

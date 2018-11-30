@@ -4,69 +4,61 @@
 
 using namespace std;
 
-struct node {
-	int num;
+struct node{
 	int weight;
-	vector<int> child;
+	vector<int> children;
 };
 
-int N;	//节点个数 
-int M;	//非叶子节点个数 
-int S;	//路径权值 
-node Node[100];	//建立一个大小为结点上限个数的node型数组
-vector<int> path;	//存放路径 
+int N, M, S, ID, K, child;
+node Node[100];
+vector<int> path;
 
-bool cmp(int a, int b);
-void dfs(int nowVisit, int sum); 
-void printPath();
+bool cmp(int num1, int num2);
+void dfs(int nowVisit, int sum);
 
 int main(){
-	cin >> N >> M >> S;
+	scanf("%d %d %d", &N, &M, &S);
 	for(int i = 0; i < N; i++){
-		cin >> Node[i].weight;
+		scanf("%d", &Node[i].weight);
 	}
-	int ID, K, childID;
 	for(int i = 0; i < M; i++){
-		cin >> ID >> K;
+		scanf("%d %d", &ID, &K);
 		for(int j = 0; j < K; j++){
-			cin >> childID;
-			Node[ID].child.push_back(childID);
+			scanf("%d", &child);
+			Node[ID].children.push_back(child);
 		}
-		sort(Node[ID].child.begin(), Node[ID].child.end(), cmp);	//对每个节点的子节点进行排序 
+		sort(Node[ID].children.begin(), Node[ID].children.end(), cmp);
 	}
-	dfs(0, 0);	//从0节点开始深度优先遍历 
+	dfs(0, 0);
 	return 0;
 }
 
-bool cmp(int a, int b){
-	return Node[a].weight > Node[b].weight;	//用大于等于号会出现段错误 
+bool cmp(int num1, int num2){
+	return Node[num1].weight > Node[num2].weight;
 }
 
 void dfs(int nowVisit, int sum){
 	path.push_back(nowVisit);
-	if(sum + Node[nowVisit].weight > S){
-		path.pop_back();
-		return;
-	}
-	if(sum + Node[nowVisit].weight == S){
-		if(Node[nowVisit].child.size() == 0){	//判断当前节点是否是叶子节点 
-			printPath();
+	if(Node[nowVisit].children.size() == 0){
+		sum += Node[nowVisit].weight;
+		if(sum == S){
+			for(int i = 0; i < path.size(); i++){
+				printf("%d", Node[path[i]].weight);
+				if(i != path.size() - 1){
+					printf(" ");
+				}else{
+					printf("\n");
+				}
+			}
 		}
 		path.pop_back();
 		return;
 	}
-	for(int i = 0; i < Node[nowVisit].child.size(); i++){
-		dfs(Node[nowVisit].child[i], sum + Node[nowVisit].weight);
+	if(sum > S){
+		return;
+	}
+	for(int i = 0; i < Node[nowVisit].children.size(); i++){
+		dfs(Node[nowVisit].children[i], sum + Node[nowVisit].weight);
 	}
 	path.pop_back();
-}
-
-void printPath(){
-	for(int i = 0; i < path.size(); i++){
-		cout << Node[path[i]].weight;
-		if(i != path.size() - 1){
-			cout << " ";
-		}
-	}
-	cout << endl;
 }

@@ -8,14 +8,10 @@ using namespace std;
 struct node {
 	int v;	//节点编号
 	int len;	//道路长度
-	node(int _v, int _len) : v(_v), len(_len) {}	//构造函数
+	node(int _v, int _len) : v(_v), len(_len) {}	
 };
 
-int N;	//房子数量
-int M;	//加油站数量
-int K;	//道路数量
-int Ds;	//加油站服务范围
-int INF = 1000000000;	//无穷大数
+int N, M, K, Ds, INF = 1000000000;	//房子数量，加油站数量，道路数量，加油站服务范围，无穷大数 
 vector<node> graph[1020]; //无向图，房子的编号为1 ~ N，加油站的编号为N + 1 ~ N + M
 int d[1020];	//记录最短长度
 bool visited[1020];	//标记数组
@@ -28,7 +24,7 @@ int change(string s);
 void dijkstra(int s);
 
 int main() {
-	cin >> N >> M >> K >> Ds;
+	scanf("%d %d %d %d", &N, &M, &K, &Ds); 
 	string P1, P2;
 	int Dist;
 	for(int i = 0; i < K; i++) {
