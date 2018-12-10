@@ -13,12 +13,10 @@ struct node {
 
 vector<node> graph[10000];
 int start, destination, INF = 1000000;
-bool visited[10000];	//广度优先遍历的标记数组，标记某节点是否已经入过队并出队 
+bool visited[10000];	//广度优先遍历的标记数组，标记某节点是否已被访问过 
 set<int> pre[10000];	//记录前一个节点
-vector<int> tempPath;
-vector<int> path;
-int minLength = INF;
-int minTransfer = INF;
+vector<int> tempPath, path;
+int minLength, minTransfer;
 
 void init();
 void bfs(int nowVisit);
@@ -49,9 +47,9 @@ int main() {
 		printf("%d\n", path.size() - 1);
 		int from = path.size() - 1;
 		int lastLine;
-		for(int k = 0; k < graph[path[path.size() - 1]].size(); k++) {
-			if(graph[path[path.size() - 1]][k].v == path[path.size() - 2]) {
-				lastLine = graph[path[path.size() - 1]][k].lineFlag;
+		for(int k = 0; k < graph[path[from]].size(); k++) {
+			if(graph[path[from]][k].v == path[from - 1]) {
+				lastLine = graph[path[from]][k].lineFlag;
 			}
 		}
 		for(int j = path.size() - 2; j > 0; j--) {
@@ -71,30 +69,35 @@ int main() {
 }
 
 void init() {
-	tempPath.clear();
 	path.clear();
 	for(int i = 0; i < 10000; i++) {
 		pre[i].clear();
 	}
-	minLength = INF;
-	minTransfer = INF;
+	minLength = minTransfer = INF;
 	fill(visited, visited + 10000, false);
 }
 
 void bfs(int nowVisit) {
 	queue<int> q;
 	q.push(nowVisit);
+	visited[nowVisit] = true;
 	while(!q.empty()) {
-		int now = q.front();
-		visited[now] = true;
-		q.pop();
-		for(int i = 0; i < graph[now].size(); i++) {
-			int v = graph[now][i].v;
-			if(visited[v]) {
-				continue;
+		int qSize = q.size();
+		set<int> tempVisited;
+		for(int i = 0; i < qSize; i++) {
+			int now = q.front();
+			q.pop();
+			for(int i = 0; i < graph[now].size(); i++) {
+				int v = graph[now][i].v;
+				if(!visited[v]) {
+					q.push(v);
+					pre[v].insert(now);
+					tempVisited.insert(v);
+				}
 			}
-			q.push(v);
-			pre[v].insert(now);
+		}
+		for(set<int>::iterator it = tempVisited.begin(); it != tempVisited.end(); it++){	 
+			visited[*it] = true;	//在遍历完同一层的所有节点后再去标记访问数组
 		}
 	}
 }
@@ -107,14 +110,15 @@ void dfs(int nowVisit) {
 			for(int j = 0; j < graph[tempPath[i]].size(); j++) {
 				if(graph[tempPath[i]][j].v == tempPath[i - 1]) {
 					lineFlags.insert(graph[tempPath[i]][j].lineFlag);
+					break; 
 				}
 			}
 		}
-		if(tempPath.size() < minLength){	 //找到了更短的路径 
+		if(tempPath.size() < minLength) {	 //找到了更短的路径
 			minLength = tempPath.size();
-			minTransfer = lineFlags.size();	//也要更新最小转地铁次数 
+			minTransfer = lineFlags.size();	//也要更新最小转地铁次数
 			path = tempPath;
-		}else if(tempPath.size() == minLength && lineFlags.size() < minTransfer) {	//如果路径相等，但是转地铁次数更小 
+		} else if(tempPath.size() == minLength && lineFlags.size() < minTransfer) {	//如果路径相等，但是转地铁次数更小
 			minTransfer = lineFlags.size();
 			path = tempPath;
 		}

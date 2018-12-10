@@ -5,45 +5,31 @@
 using namespace std;
 
 int main() {
-	int count;
-
-	cin >> count;
-
-	long tempNum;
-	vector<long> beforeSort;
-	vector<long> afterSort;
-	vector<long> result;
-
-	for (int i = 0; i < count; i++) {
-		cin >> tempNum;
-		beforeSort.push_back(tempNum);
-		afterSort.push_back(tempNum);
+	int N;
+	scanf("%d", &N);
+	int num, beforeSort[N], afterSort[N];
+	vector<int> result;
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &num);
+		beforeSort[i] = afterSort[i] = num;
 	}
-
-	sort(afterSort.begin(), afterSort.end());
-
-	int max = beforeSort[0];
-	for (int i = 0; i < afterSort.size(); i++) {
-		if (i == 0) {
-			if (afterSort[i] == beforeSort[i]) {
-				result.push_back(afterSort[i]);
-			}
-		} else {
-			if (afterSort[i] == beforeSort[i] && afterSort[i] > max) {
-				result.push_back(afterSort[i]);
-			}
-			if (beforeSort[i - 1] > max) {
-				max = beforeSort[i - 1];
-			}
+	sort(afterSort, afterSort + N);
+	int max = 0;
+	for (int i = 0; i < N; i++) {
+		if (afterSort[i] == beforeSort[i] && afterSort[i] > max) {
+			result.push_back(afterSort[i]);
+		}
+		if (beforeSort[i] > max) {
+			max = beforeSort[i];
 		}
 	}
-
-	cout << result.size() << endl;
+	printf("%d\n", result.size());
 	for (int i = 0; i < result.size(); i++) {
-		cout << result[i];
+		printf("%d", result[i]);
 		if (i != result.size() - 1) {
-			cout << " ";
+			printf(" ");
 		}
 	}
 	printf("\n");
+	return 0;
 }
